@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <link th:href="@{layui/css/layui.css}" rel="stylesheet" media="all"/>
+    <script th:src="@{layui/layui.js}"></script>
+    <script th:src="@{layui/jquery-3.2.1.js}"></script>
+    <script th:src="@{layui/jquery.qrcode.min.js}"></script>
+    <title>Title</title>
+</head>
+<style>
+    .p-image-all {
+        font-size: 10px;
+        z-index: 9999;
+        line-height: 18px;
+        width: 40%;
+        height: 30px;
+    }
+    .layui-carousel-ind {
+        display: none !important;
+    }
+    .layui-carousel-arrow {
+        display: none !important;
+    }
+    body {
+        background: #fff url("layui/image/backgroundimg.png") top center no-repeat;
+        background-size: contain;
+        background-size: 100% 100%;
+    }
+    .layui-carousel {
+        margin-left: 3%;
+        margin-top: 65%;
+    }
+    .h2-number-desc {
+        position: absolute;
+        right: 4%;
+        top: 130px;
+        font-size: 21px;
+        font-family: SimSun-ExtB;
+        color: #9e2b2b;
+    }
+    .h2-number-desc i {
+        font-size: 28px;
+        font-style: normal;
+        color: red;
+    }
+    .h2-number {
+        position: absolute;
+        color: red;
+        right: 10%;
+        top: 150px;
+        font-size: 35px;
+        color: #d800ff;
+    }
+    .h2-install-i {
+        position: absolute;
+        right: 6%;
+        bottom: 130px;
+        z-index: 9999;
+        font-size: 45px;
+        color: #d800ff;
+    }
+    .h2-install-p {
+        position: absolute;
+        right: 6%;
+        bottom: 108px;
+        z-index: 9999;
+        font-size: 21px;
+        color: #d800ff;
+    }
+    .h2-reload-p {
+        position: absolute;
+        right: 6%;
+        bottom: 218px;
+        z-index: 9999;
+        font-size: 21px;
+        color: #d800ff;
+    }
+    .h2-reload-i {
+        position: absolute;
+        right: 6%;
+        bottom: 240px;
+        z-index: 9999;
+        font-size: 45px;
+        color: #d800ff;
+    }
+    .h2-install-i:hover {
+        cursor: pointer;
+    }
+    .h2-install-p:hover {
+        cursor: pointer;
+    }
+    .h2-reload-i:hover {
+        cursor: pointer;
+    }
+    .h2-reload-p:hover {
+        cursor: pointer;
+    }
+    #install .layui-form-select {
+        width: 58%;
+    }
+    #install input[type=number] {
+        width: 58%;
+        margin-top: 5%;
+    }
+    #install .layui-input-block {
+        margin-left: 180px;
+    }
+    #install .layui-form-label {
+        width: 130px;
+    }
+    .div-carousel {
+        border: 1px solid #696;
+
+        -webkit-box-shadow: #666 0px 0px 10px;
+
+        -moz-box-shadow: #666 0px 0px 10px;
+
+        box-shadow: #666 0px 0px 10px;
+        background: #a488ff;
+    }
+    .div-carousel:hover {
+        cursor: pointer;
+    }
+    .img-img-head {
+        height: 200px;
+        width: 60%;
+        float: left;
+        margin-left: 20%;
+    }
+    .div-image-all {
+        width: 100%;
+    }
+    .p-image-all {
+        width: 60%;
+        float: left;
+        margin-left: 20%;
+        height: 14px;
+        line-height: 14px;
+        font-size: 8px;
+        text-align: center;
+        background-color: #d59f24;
+    }
+    .layui-container{
+        position: absolute;
+        z-index: 9999;
+        top: 190px;
+        left: 0px;
+    }
+    #qrcode{
+        height: 0px;
+        margin-top: 264%;
+    }
+    .scroll-layui-col{
+        height: 0px;
+        margin-top: 47%;
+    }
+    .scroll-layui-col img{
+        width: 79%;
+    }
+    .h-name {
+        font-size: 10px;
+        z-index: 99999;
+        line-height: 18px;
+        width: 100%;
+    }
+    #div-all-image .layui-col-md1{
+        width: 21.333333%;
+    }
+    .anim{position: absolute;width: 200px;height: 300px;left: 100px;top:200px;color: red;}
+    .title{position: absolute;top: 50px;color: red;font-size: 48px;left:30%;}
+</style>
+<body>
+<h1 class="title">城铁物业2018年会签到处</h1>
+<input type="hidden" th:value="${meetCode}" id="input-meet-code"/>
+<input type="hidden" th:value="${rowString}" id="input-row-list"/>
+<input type="hidden" th:value="${meetingId}" id="input-meeting-id"/>
+<p class="h2-number-desc">已签到人数: <i th:text="${recordNumber}"></i></p>
+<i class="btn-install layui-icon h2-install-i">&#xe620;</i>
+<p class="btn-install h2-install-p">设置</p>
+<i class="btn-reload layui-icon h2-reload-i">&#x1002;</i>
+<p class="btn-reload h2-reload-p">重置</p>
+
+<div id="div-all-image">
+
+</div>
+
+
+<div class="layui-container">
+    <div class="layui-row">
+        <div class="layui-col-xs2 layui-col-sm2 layui-col-md2">
+            <div id="qrcode"></div>
+        </div>
+
+<!--        <div class="layui-col-xs9 layui-col-sm9 layui-col-md9 scroll-layui-col">
+            <div th:each="row:${rowList}">
+                <div class="layui-carousel layui-col-md3" th:id="${row}">
+                    <div carousel-item="carousel-item">
+                        <div th:each="list:${employeeList}">
+                            &lt;!&ndash;<i th:text="${list.name}"></i>&ndash;&gt;
+                            <div class="div-carousel">
+                                <img class="img-head" th:src="${list.headPicUrl}"
+                                     onerror="this.src='layui/image/headImage.jpg'"
+                                     width="100%"/>
+                                <p th:text="${list.name}" class="h-name" align="center"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>-->
+
+        <div style="margin-left: 10%;">
+
+        </div>
+
+    </div>
+</div>
+<!--设置-->
+<div id="install" style="display: none;">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">每行显示个数</label>
+            <div class="layui-input-block">
+                <input type="number" name="title" required="required" lay-verify="required" placeholder="请输入标题"
+                       autocomplete="off" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">每行显示个数</label>
+            <div class="layui-input-block">
+                <select name="city" lay-verify="required">
+                    <option value="1">1秒</option>
+                    <option value="2">2秒</option>
+                    <option value="4">4秒</option>
+                    <option value="6">6秒</option>
+                    <option value="8">8秒</option>
+                    <option value="10">10秒</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="require" lay-filter="formDemo">立即提交</button>
+                <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+            </div>
+        </div>
+    </form>
+</div>
+<audio id="audio" src="layui/audio/shind.mp3"><source src="layui/audio/shind.mp3" type="audio/mpeg"/></audio>
+<div class="layui-anim layui-anim-rotate" id="layui-anim">
+
+</div>
+</body>
+<script>
+    //meetingId
+    var meetingId = $("#input-meeting-id").val();
+    var full = false;
+    var screenHeight = window.screen.height;
+    var screenWidth = $(window).width();
+    //设置滚动图片的宽高
+    var height = screenHeight * 0.09;
+    var width = screenWidth * 0.04;
+    var rowString = $("#input-row-list").val();
+    var row = rowString.split(",");
+    var ins = [];
+
+    $("body").css("height",screenHeight);
+
+    //设置全部头像的高
+    $(".img-img-head").css("height", Math.round(screenWidth / 16) - 14);
+
+    function layuiCarousel() {
+        layui.use('carousel', function () {
+            var carousel = layui.carousel;
+            $.each(row, function (index, value) {
+                //建造实例
+                ins.push(
+                    carousel.render({
+                        elem: '#' + value
+                        , width: width //设置容器宽度
+                        , height: height
+                        , arrow: 'none' //始终显示箭头
+                        , full: full
+                        , indicator: 'outside'
+                        , anim: 'fade' //切换动画方式
+                        , index: index + 1
+                        , interval: 3000
+                    })
+                )
+            })
+        });
+    }
+
+    //重置
+    $(".btn-reload").click(function () {
+        $("body").css("background-color", "#E793FF");
+        location.reload();
+    });
+
+    //设置
+    $(".btn-install").click(function () {
+        layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.open({
+                title: '设置'
+                , type: 1
+                , content: $("#install")
+                , skin: 'layui-layer-molv'
+                , area: '399px;'
+                , anim: 5
+                , offset: '150px'
+            });
+        });
+    })
+
+    /*<![CDATA[*/
+    var obj = 0;
+    function scrolImg() {
+        var scrImg = [];
+        var i=0;
+        $.ajax({
+            url: 'sign',
+            type: 'POST', //GET
+            async: true,    //或false,是否异步
+            data: {
+                meetingId: meetingId
+            },
+            timeout: 5000,    //超时时间
+            dataType: 'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+            success: function (data) {
+                $(".layui-container .scroll-layui-col").remove();
+                var employeeName = data.employeeName;
+                var employeeImageUrl = data.employeeImageUrl;
+                var recordNumber = data.recordNumber;
+
+                for(var j=7-obj;j>=-obj;j--){
+                    var i=0;
+                    if(j<0) {
+                       i=7-j;
+                    }else{
+                       i=j;
+                    }
+                    scrImg.push(employeeImageUrl[i]);
+                }
+                for(var j=0;j<8;j++){
+                    $(".layui-container .layui-row").append("<div class=\"layui-col-xs1 layui-col-sm1 layui-col-md1 scroll-layui-col\"><img class=\"img-head\" src='"+scrImg[j]+"' onerror=\"this.src='layui/image/headImage.jpg'\"width=\"100%\"/></div>");
+                }
+                $(".img-head").css("height", 100);
+                obj++;
+                if(recordNumber>8&&obj==recordNumber){
+                    obj=0;
+                }
+                if(recordNumber<=8&&obj==7) {
+                    obj=0;
+                }
+            }
+        })
+    }
+    /*]]>*/
+
+    //表单监听
+    layui.use('form', function () {
+        var form = layui.form;
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            layer.msg(JSON.stringify(data.field));
+            return false;
+        });
+    });
+
+    /*<![CDATA[*/
+    $(document).ready(function () {
+        setInterval("scrolImg()",3000);
+        //生成二维码
+        var meetCode = $("#input-meet-code").val();
+        $('#qrcode').qrcode({width: 150,height: 150,text: meetCode});
+        check40();
+    })
+    /*]]>*/
+
+    /*<![CDATA[*/
+    function check40(){
+        //设置列数--可以*2
+        var colum = 9;
+        $.ajax({
+            url: 'sign',
+            type: 'POST', //GET
+            async: false,    //或false,是否异步
+            data: {
+                meetingId: meetingId
+            },
+            timeout: 5000,    //超时时间
+            dataType: 'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+            success: function (data) {
+                var employeeName = data.employeeName;
+                var employeeImageUrl = data.employeeImageUrl;
+                checkNumber = data.recordNumber;
+                //图片第一行的top
+                var allHeight = 140+Math.round(screenWidth / 18);
+                var html0 = "";
+                var html = [];
+                var endHtml = "</div></div>";
+                //计算图片行数
+                var line = Math.ceil(employeeImageUrl.length/colum);
+/*                                line = 5;
+                                for(var i=0;i<45;i++){
+                                    employeeImageUrl.push(1);
+                                }*/
+                var startHtml = [];
+                for(var i=0;i<line;i++){
+                    startHtml.push("<div style='top:"+allHeight+"px;position: absolute;'><div class='layui-row'>");
+                    allHeight += Math.round(screenWidth / 16);
+                    $.each(employeeImageUrl, function (index, value) {
+                            if(index>=(i*colum)&&index<((i+1)*colum)) html0+="<div class='layui-col-xs1 layui-col-sm1 layui-col-md1' style='width:80px;'><div class='div-image-all'><ul class='box'><li><img class='img-img-head' src='"+value+"' onerror=\"this.src='layui/image/headImage.jpg'\" width='100%'/></li><h3 class='p-image-all' align='center'>"+employeeName[index]+"</h3></ul></div></div>";
+                        if(index==((i+1)*colum-1)||(index==employeeImageUrl.length-1)) {html.push(html0); html0="";return false;}
+                    })
+                    $("#div-all-image").append(startHtml[i]+html[i]+endHtml);
+                }
+                //设置全部头像的高
+                $(".img-img-head").css("height", Math.round(screenWidth / 24));
+                //console.log($("#div-all-image>div>.layui-row:last").children("div:last-child")[0].innerHTML);
+                /*for(var i=0;i<206;i++){
+                    checkRegister(allHeight);
+                }*/
+                setInterval("checkRegister40 (215)",6000);
+            }
+        })
+    }
+    /*]]>*/
+
+    /*<![CDATA[*/
+    function checkRegister40(allHeights) {
+        $.ajax({
+            url: 'checkRegister',
+            type: 'POST', //GET
+            async: true,    //或false,是否异步
+            data: {
+                checkNumber: checkNumber,
+                meetingId: meetingId
+            },
+            timeout: 5000,    //超时时间
+            dataType: 'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+            success: function (data) {
+                var employeeName = data.employeeName;
+                var employeeImageUrl = data.employeeImageUrl;
+                var flag = data.flag;
+                console.log("checkNumber:"+checkNumber);
+                if(flag){
+                    $("#layui-anim").append("<h2 class=\"anim\" style='z-index: 99999;'>欢迎您："+employeeName+"</h2><img src="+employeeImageUrl+" onerror=\"this.src='layui/image/headImage.jpg'\" class=\"layui-anim-rotate anim\"/>");
+                    checkNumber++;
+                    $(".h2-number-desc").empty();
+                    $(".h2-number-desc").append("已签到人数: <i>"+checkNumber+"</i>");
+                        if(checkNumber%9==1){
+                            var lineNumber = $(".layui-row").length;
+                            allHeights += (Math.round(screenWidth / 18)*(lineNumber-1));
+                            alert(allHeights+"--"+lineNumber+"--"+Math.round(screenWidth / 18));
+                            var startHtml = "<div style='top:"+allHeights+"px;position: absolute;'><div class='layui-row'>";
+                            var addHtml = "<div class='layui-col-xs1 layui-col-sm1 layui-col-md1' style='width:80px;'><div class='div-image-all'><ul class='box'><li><img class='img-img-head' src='"+employeeImageUrl+"' onerror=\"this.src='layui/image/headImage.jpg'\" width='100%'/></li><h3 class='p-image-all' align='center'>"+employeeName+"</h3></ul></div></div>";
+                            var endHtml = "</div></div>";
+                            $("#div-all-image").append(startHtml+addHtml+endHtml);
+                        }else{
+                            var addHtml = "<div class='layui-col-xs1 layui-col-sm1 layui-col-md1' style='width:80px;'><div class='div-image-all'><ul class='box'><li><img class='img-img-head' src='"+employeeImageUrl+"' onerror=\"this.src='layui/image/headImage.jpg'\" width='100%'/></li><h3 class='p-image-all' align='center'>"+employeeName+"</h3></ul></div></div>";
+                            $("#div-all-image>div>.layui-row:last").append(addHtml);
+                        }
+                    //设置全部头像的高
+                    $(".img-img-head").css("height", Math.round(screenWidth / 24));
+                    media = document.getElementById("audio");
+                    media.play();
+                    setTimeout(function () {
+                        media.load();
+                        $("#layui-anim .anim").remove();
+                    }, 5000);
+                }
+            }
+        })
+    }
+    /*]]>*/
+
+    /*<![CDATA[*/
+    function check200(){
+        //设置列数--可以*2
+        var colum = 12;
+        $.ajax({
+            url: 'http://localhost:7777/sign',
+            type: 'POST', //GET
+            async: false,    //或false,是否异步
+            data: {
+                meetingId: meetingId
+            },
+            timeout: 5000,    //超时时间
+            dataType: 'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+            success: function (data) {
+                var employeeName = data.employeeName;
+                var employeeImageUrl = data.employeeImageUrl;
+                checkNumber = data.recordNumber;
+                //图片第一行的top
+                var allHeight = 160+Math.round(screenWidth / 29);
+                var html0 = "";
+                var html = [];
+                var endHtml = "</div></div>";
+                //计算图片行数
+                var line = Math.ceil(employeeImageUrl.length/colum);
+                /*                line = 2;
+                                for(var i=0;i<30;i++){
+                                    employeeImageUrl.push(1);
+                                }*/
+                var startHtml = [];
+                for(var i=0;i<line;i++){
+                    startHtml.push("<div style='top:"+allHeight+"px;position: absolute;'><div class='layui-row'>");
+                    allHeight += Math.round(screenWidth / 30);
+                    $.each(employeeImageUrl, function (index, value) {
+                        if((index+1)%2==0){
+                            if(index>=(i*colum*2)&&index<((i+1)*colum*2)) html0+="<div class='layui-col-xs1 layui-col-sm1 layui-col-md1' style='width:100px;'><div class='div-image-all'><ul class='box'><li><img class='img-img-head' src='"+employeeImageUrl[index-1]+"' onerror=\"this.src='layui/image/headImage.jpg'\" width='100%'/></li><li><img class='img-img-head' src='"+value+"' onerror=\"this.src='layui/image/headImage.jpg'\" width='100%'/></li><h3 class='p-image-all' align='center'>"+employeeName[index-1]+"</h3><h3 class='p-image-all' align='center'>"+employeeName[index]+"</h3></ul></div></div>";
+                        }else if(index==(employeeImageUrl.length-1)&&index%2==0) html0+="<div class='layui-col-xs1 layui-col-sm1 layui-col-md1' style='width:100px;'><div class='div-image-all'><ul class='box'><li><img class='img-img-head' src='"+value+"' onerror=\"this.src='layui/image/headImage.jpg'\" width='100%'/></li><li><img class='img-img-head' src='layui/image/waiting.jpg' onerror=\"this.src='layui/image/waiting.jpg'\" width='100%'/></li><h3 class='p-image-all' align='center'>"+employeeName[index]+"</h3><h3 class='p-image-all' align='center'>等待中。</h3></ul></div></div>";
+                        if(index==((i+1)*colum*2-1)||(index==employeeImageUrl.length-1)) {html.push(html0); html0="";return false;}
+                    })
+                    $("#div-all-image").append(startHtml[i]+html[i]+endHtml);
+                }
+                //设置全部头像的高
+                $(".img-img-head").css("height", Math.round(screenWidth / 32) - 14);
+                //console.log($("#div-all-image>div>.layui-row:last").children("div:last-child")[0].innerHTML);
+                /*for(var i=0;i<206;i++){
+                    checkRegister(allHeight);
+                }*/
+                setInterval("checkRegister200 ("+allHeight+")",2000);
+            }
+        })
+    }
+    /*]]>*/
+
+    /*<![CDATA[*/
+    function checkRegister200(allHeight) {
+        $.ajax({
+            url: 'http://localhost:7777/checkRegister',
+            type: 'POST', //GET
+            async: true,    //或false,是否异步
+            data: {
+                checkNumber: checkNumber,
+                meetingId: meetingId
+            },
+            timeout: 5000,    //超时时间
+            dataType: 'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+            success: function (data) {
+                var employeeName = data.employeeName;
+                var employeeImageUrl = data.employeeImageUrl;
+                var register = 1;
+                var flag = data.flag;
+                if(flag){
+                    checkNumber++;
+                    if((checkNumber-register)%2==1){
+                        //之前总图片数是奇数
+                        //如果以前的人数是奇数则获得最后一行最后一个栅格的html
+                        var replaceHtml =  $("#div-all-image>div>.layui-row:last").children("div:last-child")[0].innerHTML;
+                        //替换等待中图片
+                        var replaced1 = replaceHtml.replace('layui/image/waiting.jpg',employeeImageUrl);
+                        var replaced2 = replaced1.replace('等待中。',employeeName);
+                        $("#div-all-image>div>.layui-row:last").children("div:last-child").remove();
+                            var startHtml = "<div style='top:"+allHeight+"px;position: absolute;'><div class='layui-row'>";
+                            var addHtml = "<div class='layui-col-xs1 layui-col-sm1 layui-col-md1' style='width:100px;'><div class='div-image-all'><ul class='box'><li><img class='img-img-head' src='"+employeeImageUrl+"' onerror='this.src='layui/image/headImage.jpg'' width='100%'/></li><li><img class='img-img-head' src='"+employeeImageUrl+"' onerror=\"this.src='layui/image/headImage.jpg'\" width='100%'/></li><h3 class='p-image-all' align='center'>"+employeeName+"</h3><h3 class='p-image-all' align='center'>等待中。</h3></ul></div></div>";
+                            var endHtml = "</div></div>";
+                            $("#div-all-image>div>.layui-row:last").append("<div class='layui-col-xs1 layui-col-sm1 layui-col-md1' style='width:100px;'>"+replaced2+"</div>");
+                    } else{
+                        //总图片是偶数
+                        if(checkNumber%24==1){
+                            var lineNumber = $(".layui-row").length;
+                            allHeight += (Math.round(screenWidth / 30)*(lineNumber-2));
+                            var startHtml = "<div style='top:"+allHeight+"px;position: absolute;'><div class='layui-row'>";
+                            var addHtml = "<div class='layui-col-xs1 layui-col-sm1 layui-col-md1' style='width:100px;'><div class='div-image-all'><ul class='box'><li><img class='img-img-head' src='"+employeeImageUrl+"' onerror='this.src='layui/image/headImage.jpg'' width='100%'/></li><li><img class='img-img-head' src='layui/image/waiting.jpg' onerror=\"this.src='layui/image/headImage.jpg'\" width='100%'/></li><h3 class='p-image-all' align='center'>"+employeeName+"</h3><h3 class='p-image-all' align='center'>等待中。</h3></ul></div></div>";
+                            var endHtml = "</div></div>";
+                            $("#div-all-image").append(startHtml+addHtml+endHtml);
+                        }else{
+                            var addHtml = "<div class='layui-col-xs1 layui-col-sm1 layui-col-md1' style='width:100px;'><div class='div-image-all'><ul class='box'><li><img class='img-img-head' src='"+employeeImageUrl+"' onerror='this.src='layui/image/headImage.jpg'' width='100%'/></li><li><img class='img-img-head' src='layui/image/waiting.jpg' onerror=\"this.src='layui/image/headImage.jpg'\" width='100%'/></li><h3 class='p-image-all' align='center'>"+employeeName+"</h3><h3 class='p-image-all' align='center'>等待中。</h3></ul></div></div>";
+                            $("#div-all-image>div>.layui-row:last").append(addHtml);
+                        }
+                    }
+                    //设置全部头像的高
+                    $(".img-img-head").css("height", Math.round(screenWidth / 32) - 14);
+                    media = document.getElementById("audio");
+                    media.play();
+                    setTimeout(function () {
+                        media.load();
+                    }, 6000);
+                }
+            }
+        })
+    }
+    /*]]>*/
+</script>
+</html>
